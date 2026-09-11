@@ -7,8 +7,7 @@ Artefato: git-exposure-check (Validador de Exposição de Arquivos Sensíveis e 
 
 1. LINK PARA O REPOSITÓRIO PÚBLICO NO GITHUB
 --------------------------------------------------------------------------------
-https://github.com/<SEU_USUARIO_GITHUB>/git-exposure-check
-(Substituir pela URL final do repositório público após o push)
+https://github.com/Erik-Fontella/git-exposure-check
 
 
 2. MODELO(S) DE IA UTILIZADO(S) EM CADA ETAPA
