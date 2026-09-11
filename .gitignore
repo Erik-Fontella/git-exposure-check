@@ -1,0 +1,36 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Caches e testes
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Ambientes virtuais
+venv/
+.venv/
+env/
+
+# Arquivos de ambiente e segredos locais
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.pfx
+id_rsa*
+id_ed25519*
+credentials.json
+client_secret*.json
+*.sqlite3
+*.db
+dump.sql
+backup.sql
+
+# IDEs e Sistema Operacional
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db

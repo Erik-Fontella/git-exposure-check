@@ -1,0 +1,176 @@
+================================================================================
+RELATO DE DESENVOLVIMENTO DE ARTEFATO ASSISTIDO POR INTELIGÊNCIA ARTIFICIAL
+Disciplina: Laboratório de Artefatos de Software / Cibersegurança
+Instituição: Universidade Federal do Pampa (Unipampa)
+Artefato: git-exposure-check (Validador de Exposição de Arquivos Sensíveis e Gitignore)
+================================================================================
+
+1. LINK PARA O REPOSITÓRIO PÚBLICO NO GITHUB
+--------------------------------------------------------------------------------
+https://github.com/<SEU_USUARIO_GITHUB>/git-exposure-check
+(Substituir pela URL final do repositório público após o push)
+
+
+2. MODELO(S) DE IA UTILIZADO(S) EM CADA ETAPA
+--------------------------------------------------------------------------------
+- Desenvolvimento do Código: Gemini 3.8 Flash (High) / Antigravity Agent
+- Geração do README.md: Gemini 3.8 Flash (High)
+- Revisão Crítica do Artefato: Gemini 3.8 Flash (High)
+
+
+3. EXEMPLOS DOS PRINCIPAIS PROMPTS UTILIZADOS
+--------------------------------------------------------------------------------
+A condução do trabalho ocorreu de maneira iterativa e decomposta em tarefas,
+evitando solicitações genéricas em bloco único.
+
+a) Prompts que produziram bons resultados:
+- Prompt 1 (Definição de Regras e Assinaturas):
+  "Crie um módulo rules.py contendo dataclasses e enums para catalogar arquivos
+  sensíveis frequentemente vazados no Git (.env, *.pem, *.key, id_rsa,
+  credentials.json, *.sqlite3, *.tfvars), com níveis de severidade (CRITICAL,
+  HIGH, MEDIUM), categorias e regras recomendadas para o .gitignore. Inclua
+  suporte a exceções seguras (allow_patterns) como .env.example para evitar
+  falsos positivos."
+  Resultado: Produziu uma estrutura limpa com Dataclasses, Enum de severidade e
+  tratamento adequado de exceções.
+
+- Prompt 2 (Construção do Test Suite e Fixtures Reprodutíveis):
+  "Crie uma suíte de testes com pytest cobrindo as regras, a ausência de falsos
+  positivos para arquivos de exemplo e o motor de matching do .gitignore. Além
+  disso, crie um diretório de fixtures contendo um repositório simulado vulnerável
+  (com .env, server.key, app.sqlite3 e um .gitignore incompleto) para permitir
+  que qualquer pessoa teste a ferramenta com um único comando."
+  Resultado: 32 testes unitários e de integração implementados e validados em
+  menos de 0.2 segundos.
+
+b) Prompts que produziram resultados inadequados ou incorretos:
+- Prompt Inicial (Varredura e Recomendações):
+  "Implemente o scanner para ler todos os arquivos e sugerir a regra de ignore."
+  Problema gerado pela IA: A IA inicialmente pegava de forma cega o primeiro item
+  da lista de recomendações genéricas (ex.: para um arquivo 'server.key', sugeria
+  adicionar '*.pem' ao .gitignore, pois '*.pem' era o índice 0 da regra de chaves).
+  Além disso, no Windows, os caracteres acentuados saíam truncados/com interrogação
+  no terminal devido ao Code Page padrão cp1252.
+
+- Prompt Refinado / Correção:
+  "Refatore o método _build_recommendation no scanner.py para casar
+  especificamente a extensão e o nome do arquivo detectado com a recomendação
+  mais exata da regra (ex: se o arquivo for .key, sugerir *.key; se for .env,
+  sugerir .env). Adicione também a reconfiguração explícita de encoding UTF-8
+  no main.py para garantir execução perfeita no terminal Windows PowerShell."
+  Resultado: A recomendação passou a ser cirúrgica e a exibição gráfica no terminal
+  ficou 100% legível com acentuação correta.
+
+
+4. DECISÕES TOMADAS PELO ALUNO QUE A IA NÃO CONSEGUIU RESOLVER ADEQUADAMENTE
+--------------------------------------------------------------------------------
+1. Definição da Raiz do Projeto:
+   A IA inicialmente propôs aninhar o código sob uma subpasta interna
+   'git-exposure-check/Atividade_3/'. Foi necessária a intervenção direta do
+   aluno para definir que a pasta 'Atividade_3/' deveria ser a raiz absoluta do
+   projeto e do repositório Git, evitando redundância e confusão estrutural.
+
+2. Tratamento de Depreciações e Alertas em Bibliotecas Modernas:
+   Durante a execução dos testes automatizados, o motor da biblioteca 'pathspec'
+   emitiu um DeprecationWarning informando que o padrão 'gitwildmatch' foi
+   descontinuado em favor de 'gitignore'. A intervenção humana identificou o
+   alerta e orientou a atualização do código para utilizar a API contemporânea
+   com fallback retrocompatível.
+
+3. Auto-varredura e Necessidade de Flag de Exclusão (--exclude):
+   Ao rodar a ferramenta no próprio diretório do projeto, ela detectou os arquivos
+   vulneráveis intencionais criados para testes dentro de 'tests/fixtures/'. Foi
+   decisão técnica do aluno implementar a flag '--exclude' no Scanner e na CLI,
+   permitindo ignorar pastas de mock/fixtures sem comprometer a auditoria do
+   código de produção.
+
+4. Independência de Dependências Pesadas de Git:
+   Optou-se por não utilizar bibliotecas externas pesadas como GitPython (que
+   frequentemente apresentam problemas de dependência binária ou lentidão),
+   priorizando o módulo padrão 'subprocess' com fallback gracioso para varredura
+   de sistema de arquivos puramente local caso o utilitário 'git' não esteja
+   instalado no host.
+
+
+5. RESUMO DA REVISÃO REALIZADA PELA IA E MELHORIAS APLICADAS
+--------------------------------------------------------------------------------
+Submetido o artefato aos quatro critérios de avaliação de artefatos científicos:
+
+a) Critério de Disponibilidade:
+   - Avaliação: Código-fonte completo, modular, com licença de código aberto (MIT)
+     e estrutura clara.
+   - Ação: Criado o arquivo LICENSE e preparado o cabeçalho no README com badges
+     e links para publicação pública no GitHub.
+
+b) Critério de Funcionalidade:
+   - Avaliação: O artefato cumpre todos os requisitos funcionais previstos.
+   - Melhorias aplicadas:
+     * Adicionada flag '--fix-gitignore' para permitir remediação ativa automática;
+     * Exportação para múltiplos formatos (CLI interativo, JSON para pipelines
+       de CI/CD e Markdown para relatórios de conformidade);
+     * Códigos de saída semânticos (exit code 0 para sucesso, 1 para falha de
+       segurança).
+
+c) Critério de Sustentabilidade:
+   - Avaliação: Arquitetura desacoplada em 4 camadas bem delimitadas:
+     regras (rules.py), casamento de padrões (matcher.py), motor de busca
+     (scanner.py) e apresentação (reporter.py).
+   - Melhorias aplicadas: Adição de tipagem estática (Type Hints), docstrings
+     explicativas em todas as classes e funções, e dependências mínimas fixadas
+     no 'requirements.txt'.
+
+d) Critério de Reprodutibilidade:
+   - Avaliação: Excelente facilidade de teste e verificação.
+   - Melhorias aplicadas:
+     * Inclusão de suíte de testes com pytest (32 testes aprovados);
+     * Criação de pasta 'tests/fixtures/test_repo' com repositório simulado
+       contendo arquivos vulneráveis e arquivos de falso-positivo, permitindo
+       ao avaliador rodar 'python main.py tests/fixtures/test_repo' e validar o
+       funcionamento em 1 segundo;
+     * Guia passo a passo no README para Linux, macOS e Windows.
+
+
+6. REFLEXÃO CRÍTICA SOBRE O PROCESSO
+--------------------------------------------------------------------------------
+- O que a IA acelerou:
+  A IA acelerou expressivamente a geração da base sintática de código (boilerplate),
+  a definição exaustiva do catálogo inicial de padrões de arquivos sensíveis e
+  a elaboração de casos de teste parametrizados com pytest, reduzindo em mais
+  de 70% o tempo necessário para implementar a infraestrutura inicial do projeto.
+
+- O que a IA fez bem:
+  Demonstrou alta precisão na estruturação de padrões de projeto (Separação de
+  Responsabilidades, Dataclasses, Enum), elaboração da documentação técnica
+  acadêmica no README.md seguindo o padrão SBSeg e escrita de testes unitários.
+
+- Limitações encontradas e erros gerados:
+  A IA tendeu inicialmente a ignorar nuances do ambiente do usuário (como o
+  encoding padrão de terminais Windows cp1252 e peculiaridades de caminhos com
+  contrabarra), além de introduzir recomendações genéricas por índice [0] ao invés
+  de casar o contexto exato do arquivo. Também não antecipou que a ferramenta
+  detectaria suas próprias fixtures de teste sem um mecanismo de exclusão.
+
+- Situações que exigiram intervenção humana:
+  Ajuste fino da experiência do usuário no terminal (correção UTF-8), seleção de
+  recomendações contextualizadas, prevenção de depreciações de bibliotecas, e
+  concepção de regras defensivas para o .gitignore do próprio repositório.
+
+- Importância da validação e dos testes:
+  O processo evidenciou que a geração de código por IA sem validação rigorosa é
+  arriscada. Foi a execução prática dos testes com pytest e a execução manual da
+  CLI no diretório de fixtures que revelou pequenos bugs de lógica e permitiu o
+  refinamento contínuo.
+
+- O que faria diferente em uma próxima experiência:
+  Em uma próxima oportunidade, adotaria a metodologia TDD (Test-Driven
+  Development) assistida por IA desde o primeiro prompt, orientando a IA a gerar
+  primeiro as asserções de teste antes de codificar os módulos internos, o que
+  reduziria ainda mais o ciclo de depuração.
+
+
+7. PRINCÍPIO FUNDAMENTAL
+--------------------------------------------------------------------------------
+"A IA atuou como uma poderosa copiloto e aceleradora técnica; coube ao aluno a
+arquitetura, o direcionamento crítico, as decisões de engenharia, a depuração,
+a validação rigorosa e a garantia de integridade do artefato final."
+================================================================================
