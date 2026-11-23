@@ -9,7 +9,7 @@ from enum import Enum
 from pathlib import Path
 import subprocess
 import time
-from typing import Dict, List, Optional, Set
+from typing import Dict, Iterable, List, Optional, Set
 
 from git_exposure.matcher import GitignoreMatcher
 from git_exposure.rules import Rule, Severity, find_matching_rule, get_default_rules
