@@ -34,3 +34,9 @@ backup.sql
 .vscode/
 .DS_Store
 Thumbs.db
+
+# Fixtures sintéticas dos testes: arquivos FALSOS, sem nenhum segredo real.
+# Precisam ir para o repositório para a demonstração de um comando funcionar.
+!tests/fixtures/test_repo/.env
+!tests/fixtures/test_repo/server.key
+!tests/fixtures/test_repo/app.sqlite3

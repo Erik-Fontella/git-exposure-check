@@ -2,7 +2,7 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Python Version](https://img.shields.io/badge/Python-3.9%2B-brightgreen.svg)](https://www.python.org/)
-[![Tests](https://img.shields.io/badge/Tests-32%20passed-success.svg)](tests/)
+[![Testes](https://github.com/Erik-Fontella/git-exposure-check/actions/workflows/tests.yml/badge.svg)](https://github.com/Erik-Fontella/git-exposure-check/actions/workflows/tests.yml)
 [![SBSeg Artifacts](https://img.shields.io/badge/SBSeg%202026-Artifact%20Compliant-orange.svg)](https://doc-artefatos.github.io/sbseg2026/)
 
 > **Validador Estático de Arquivos Sensíveis e Análise de Cobertura de Regras do `.gitignore` para Prevenção de Vazamento de Segredos.**
@@ -85,7 +85,7 @@ Atividade_3/
 
 ### Requisitos de Sistema
 - **Sistema Operacional:** Linux, macOS ou Microsoft Windows (10/11);
-- **Python:** Versão `3.9` ou superior (testado e validado em Python `3.14`);
+- **Python:** Versão `3.9` ou superior (os 32 testes rodam a cada push em Python `3.9`, `3.10`, `3.11`, `3.12`, `3.13` e `3.14`, via GitHub Actions);
 - **Git:** Instalado e disponível no `PATH` (opcional, utilizado para checagem de arquivos comitados).
 
 ### Dependências Externas (`requirements.txt`)
@@ -240,3 +240,10 @@ Este projeto é distribuído sob os termos da licença **MIT**. Consulte o arqui
 3. **OWASP Foundation:** *OWASP Top 10: Security Misconfiguration*.
 4. **Git Documentation:** *gitignore - Specifies intentionally untracked files to ignore*. Disponível em: [https://git-scm.com/docs/gitignore](https://git-scm.com/docs/gitignore)
 5. **PathSpec Documentation:** *Utility library for pattern matching of file paths based on gitwildmatch*.
+
+---
+
+## Histórico de versões
+
+- **1.0.1 (23/11/2026):** corrige o import de `Iterable` em `scanner.py` (a ferramenta só rodava no Python 3.14); inclui no repositório os arquivos falsos de `tests/fixtures/test_repo` (`.env`, `server.key`, `app.sqlite3`, `debug.log`), que o `.gitignore` deixava de fora; adiciona testes automáticos em Python 3.9 a 3.14. Os três problemas foram encontrados ao reavaliar o próprio artefato como um comitê faria.
+- **1.0.0 (set/2026):** primeira versão.
